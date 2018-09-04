@@ -1,6 +1,6 @@
 
 def isEmpty(x):
-	return x == ' '
+	return x == '-'
 
 def isSame(x1,x2):
 	return x1 == x2
@@ -39,33 +39,27 @@ def checkWin(brd,x,y):
 	return has5stone(getFullLen(brd,x,y))
 
 def move(brd,x,y,clr):
-	if isEmpty(brd[x][y]):
-		brd[x][y]=clr
+	if isEmpty(brd[y-1][x-1]):
+		brd[y-1][x-1]=clr
 		return True
 	else:
 		return False
 
 def setXY():
-	x=input("x=")
-	y=input("y=")
+	x=int(input("x="))
+	y=int(input("y="))
 	return x,y
 
-def move_make_sure(brd,clr):
-	done=False
-	while(not done):
-		x,y=setXY()
-		done=move(brd,x,y,clr)
-
-def showLine(line):
+def getLine(line):
 	s=''
-	for i in len(line):
+	for i in range(len(line)):
 		s+=line[i]
-	print(s)
+	return s
 
 def show(brd):
 	print("_0123456789")
 	for line in range(10):
-		showLine(brd[line])
+		print(str(line)+getLine(brd[line]))
 
 def turn(clr):
 	if clr=='b':
@@ -74,12 +68,17 @@ def turn(clr):
 		return 'b'
 
 def GameLoop():
-	board=[[' ' for i in range(10)] for j in range(10)]
+	brd=[['-' for i in range(10)] for j in range(10)]
 	clr='b'
 	isEnd=False
 	while(not isEnd):
 		show(brd)
-		move_make_sure(brd,clr) # ask player to move
+		done=False
+		x,y=0,0
+		while(not done):
+			print(clr+' \'s turn')
+			x,y=setXY()
+			done=move(brd,x,y,clr)
 		if checkWin(brd,x,y): # check game is over
 			isEnd=True
 		else:
@@ -90,3 +89,5 @@ def GameLoop():
 # 180903 game source code is done
 # TODO: make class and object
 # TODO: package x,y to pt(point), vx,vy to vt(vector)
+
+GameLoop()
