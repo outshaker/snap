@@ -11,6 +11,16 @@ class State:
 		self.act = actFunc
 		self.transTable = {}
 		self.isAccept = isAccept
+		
+	def __str__(self):
+		s = 'state:%s,%s\n' % (self.name,self.isAccept)
+		for k in list(self.transTable.keys()):
+			s += '(%s)-> %s\n' % (k,self.transTable[k].name)
+		return s
+
+	def p(self):
+		print('state:%s' % self.name)
+		return
 
 	def addTransform(self, token, target):
 		if token in self.transTable:
@@ -29,43 +39,52 @@ class State:
 		self.isAccept = b
 
 class FSM:
-	def __init__(self, states, start):
+	def __init__(self, states, startState):
 		self.states = states
-		self.start = start
+		self.now = startState
+	
+	def _getNext(self, state, token):
+		assert len(token)==1, 'token must be a char'
+		print('get token %s' % token)
+		now, nextState = state, None
+		if token in now.transTable:
+			nextState = now.transTable[token]
+		else: # use symbol list to check,190220 OK
+			symbSets = filter(isSymbKey,list(now.transTable.keys()))
+			for symbSet in symbSets:
+				if token in symbSet:
+					nextState = now.transTable[symbSet] # transform to next state
 
+		if nextState:
+			print('from %s to %s' % (now.name, nextState.name))
+			# if self.now.act: now.act() # state behavior
+			return nextState
+		else:
+			print('this token %s is not in transTable' % token)
+			# TODO: stop FSM, error end
+			# stay in 'now'
+			return now
+		
+	def step(self, token):
+		self.now = self._getNext(self.now, token)
+		return 
+	
 	def execute(self, tape):
 		print('FSM is start')
 		print('tape:',tape)
-		now = self.start
 		self.tape = tape
-		# if now.act:
-			# now.act()
+		# if self.now.act:
+			# self.now.act()
 		for token in self.tape:
-			print('get token %s' % token)
-
-			# find nextState
-			nextState = None
-			if token in now.transTable:
-				nextState = now.transTable[token]
-			else: # use symbol list to check,190220 OK
-				symbSets = filter(isSymbKey,list(now.transTable.keys()))
-				for symbSet in symbSets:
-					if token in symbSet:
-						nextState = now.transTable[symbSet] # transform to next state
-
-			if nextState:
-				print('from %s to %s' % (now.name, nextState.name))
-				if now.act: now.act() # state behavior
-				now = nextState # transform to next state
-			else:
-				print('this token %s is not in transTable' % token)
-				# TODO: stop FSM, error end
-
-		if now.isAcceptState():
+			self.step(token)
+			
+		if self.now.isAcceptState():
 			print('Accept')
 		else:
 			print('Deny!')
 		print('FSM is finish')
+		
+	
 
 Symbs={
 'd09':{'0','1', '2', '3', '4', '5', '6', '7', '8', '9'},
@@ -106,45 +125,22 @@ for m in list(Stats.items()): # m [triple], (state name, [dict])
 
 print('print all states')
 for s in stateList:
-	print(s.name,s.isAccept)
-	for k in list(s.transTable.keys()):
-		print(k,s.transTable[k].name)
+	# print(s)
+	s.p()
 	print('--')
 
-# S1 = State('s1')
-# S2 = State('s2', isAccept=True)
-# S1.addTransform('0', S2)
-
-# S3 = State('s3', isAccept=True)
-# S1.addTransform('1', S3)
-
-# S4 = State('s4', isAccept=True)
-# S3.addTransform('9', S4)
-# S4.addTransform('9', S4)
-
-# S5 = State('s5')
-# S2.addTransform('.', S5)
-# S3.addTransform('.', S5)
-# S4.addTransform('.', S5)
-
-# S6 = State('s6', isAccept=True)
-# S5.addTransform('9', S6)
-# S6.addTransform('1', S6)
-
-# S7 = State('s7')
-# S6.addTransform('0', S7)
-# S7.addTransform('0', S7)
-# S7.addTransform('1', S6)
-
-# states = [S1, S2, S3, S4, S5, S6, S7]
-
-# fsm = FSM(states, S1)
-# fsm.execute('1999.91011')
-
 fsm = FSM(states,states['S1'])
+
 fsm.execute('0')
 fsm.execute('123')
 fsm.execute('1.987')
 fsm.execute('0.0')
 fsm.execute('0.9')
 fsm.execute('0.900')
+
+fsm._getNext(stateList[0],'0')
+fsm._getNext(stateList[0],'1')
+fsm._getNext(stateList[0],'2')
+fsm._getNext(stateList[1],'.')
+fsm._getNext(stateList[1],'1')
+
