@@ -1,0 +1,94 @@
+[info] playerLoop waiting pid=0
+[info] gameLoop_start
+[info] playerLoop waiting pid=1 
+[info] playerTurn_start pid=0 
+[debug] playerTurn: clear _next pid=0 
+[info] GameCtrl.send(p0, start) 
+[debug] playerTurn: set _actived pid=0 
+[info] playerLoop_start pid=0
+[info] GameCtrl.send(p0, 'update', ('draw_card',)) 
+[test] playerAction waiting pid=0 
+[test] playerAction_start pid=0 
+[test] playerAction pid=0 n=5 t=2.0s 
+[test] playerAction cmds=['action', 'action', 'action', 'action', 'action', 'end'] 
+[info] GameCtrl.recv(p0, 'action') 
+[info] action_event_handler: pid=0 
+[info] GameCtrl.send(p1, 'update') 
+[info] GameCtrl.recv(p0, 'action') 
+[info] action_event_handler: pid=0 
+[info] GameCtrl.send(p1, 'update') 
+[info] GameCtrl.recv(p0, 'action') 
+[info] action_event_handler: pid=0 
+[info] GameCtrl.send(p1, 'update') 
+[info] GameCtrl.recv(p0, 'action') 
+[info] action_event_handler: pid=0 
+[info] GameCtrl.send(p1, 'update') 
+[info] GameCtrl.recv(p0, 'action') 
+[info] action_event_handler: pid=0 
+[info] GameCtrl.send(p1, 'update') 
+[info] GameCtrl.recv(p0, 'end') 
+[info] end_event_handler: pid=0 
+[info] playerLoop_end pid=0
+[info] playerTurn_end pid=0 
+[info] playerLoop waiting pid=0
+[info] gameLoop: change_player pid=1 
+[info] playerTurn_start pid=1 
+[debug] playerTurn: clear _next pid=1 
+[info] GameCtrl.send(p1, start) 
+[debug] playerTurn: set _actived pid=1 
+[info] GameCtrl.send(p1, 'update', ('draw_card',))
+[info] playerLoop_start pid=1 
+[test] playerAction waiting pid=1 
+[test] playerAction_start pid=1 
+[test] playerAction pid=1 n=4 t=2.8s 
+[test] playerAction cmds=['action', 'action', 'action', 'action', 'end'] 
+[info] GameCtrl.recv(p1, 'action') 
+[info] action_event_handler: pid=1 
+[info] GameCtrl.send(p0, 'update') 
+[test] playerAction_end pid=0 
+[info] GameCtrl.recv(p1, 'action') 
+[info] action_event_handler: pid=1 
+[info] GameCtrl.send(p0, 'update') 
+[info] GameCtrl.recv(p1, 'action') 
+[info] action_event_handler: pid=1 
+[info] GameCtrl.send(p0, 'update') 
+[info] GameCtrl.recv(p1, 'action') 
+[info] action_event_handler: pid=1 
+[info] GameCtrl.send(p0, 'update') 
+[info] GameCtrl.recv(p1, 'end') 
+[info] end_event_handler: pid=1 
+[info] playerLoop_end pid=1 
+[info] playerLoop waiting pid=1 
+[info] playerTurn_end pid=1 
+[info] gameLoop: change_player pid=0 
+[info] playerTurn_start pid=0 
+[debug] playerTurn: clear _next pid=0 
+[info] GameCtrl.send(p0, start) 
+[debug] playerTurn: set _actived pid=0 
+[info] GameCtrl.send(p0, 'update', ('draw_card',))
+[info] playerLoop_start pid=0 
+[test] playerAction waiting pid=0 
+[test] playerAction_start pid=0 
+[test] playerAction pid=0 n=4 t=2.0s 
+[test] playerAction cmds=['action', 'action', 'action', 'action', 'end'] 
+[info] GameCtrl.recv(p0, 'action') 
+[info] action_event_handler: pid=0 
+[info] GameCtrl.send(p1, 'update') 
+[info] GameCtrl.recv(p0, 'action') 
+[info] action_event_handler: pid=0 
+[info] GameCtrl.send(p1, 'update') 
+[test] playerAction_end pid=1 
+[info] GameCtrl.recv(p0, 'action') 
+[info] action_event_handler: pid=0 
+[info] GameCtrl.send(p1, 'update') 
+[info] GameCtrl.recv(p0, 'action') 
+[info] action_event_handler: pid=0 
+[info] GameCtrl.send(p1, 'update') 
+[info] GameCtrl.recv(p0, 'end') 
+[info] end_event_handler: pid=0 
+[info] playerLoop_end pid=0
+[info] playerTurn_end pid=0 
+[info] gameLoop: change_player pid=1 
+[info] playerLoop waiting pid=0
+[info] gameLoop_end 
+[test] playerAction_end pid=0 
