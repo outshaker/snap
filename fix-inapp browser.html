@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+    <!-- from http://www.plentycollection.com/3g_cart.php?act=check -->
+    <head>
+        <!-- 20200415 Long: 支援jQuery confirm 插件 -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+        <!-- 20200415 Long: 支援jQuery confirm 插件 -->
+
+        <!-- 20200415 Long: 修正內嵌瀏覽器問題-->
+        <script>
+        //判定是否在 in-App browser？
+        function isWebview() {
+            var useragent = navigator.userAgent;
+            var rules = ['WebView','(iPhone|iPod|iPad)(?!.*Safari\/)','Android.*(wv|\.0\.0\.0)'];
+            var regex = new RegExp(`(${rules.join('|')})`, 'ig');
+            return Boolean(useragent.match(regex));
+        };
+
+        //封裝jQuery-confirm插件
+        function xconfirm(msg){
+            function getAnswer(){
+                console.log("in waitAnswer()", Date.now());
+                var $d = $.Deferred();
+                $.confirm({
+                    title: '確認',
+                    content: msg,
+                    closeIcon: true,
+                    columnClass: 'medium',
+                    buttons: {
+                        yes: {
+                            text: '是',
+                            btnClass: 'btn-blue',
+                            action: function () {
+                                console.log("btn.yes");
+                                $d.resolve();
+                            }
+                        },
+                        no: {
+                            text: '否',
+                            btnClass: 'btn-blue',
+                            action: function(){
+                                console.log("btn.no");
+                                $d.reject();
+                            }
+                        }
+                    },
+                    backgroundDismiss: true, // this will just close the modal
+                    onDestroy: function () {
+                        console.log("confirm-leave");
+                        $d.reject();
+                    },
+                });
+                return $d.promise();
+            }
+            return getAnswer();
+        };
+        </script>
+        <!-- 20200415 Long:修正內嵌瀏覽器問題 end-->
+
+        //20200416 Long: 修正手機內嵌瀏覽器相容性問題
+        <script>
+        var isSubmit = false;
+        function order_submit(form) {
+            if (isSubmit) return;
+            if(!isWebview()){ //原本作法
+                if (confirm("確認送出訂單？")) {
+                    if (!isSubmit) {
+                        isSubmit = true;
+                    }
+                    $fz_feel2 = $('#fz_feel2');
+                    if ($fz_feel2.length) {
+                        $fz_feel2_val = parseInt($fz_feel2.val(), 10);
+                        // 初始化訂單
+                        if (isNaN($fz_feel2_val) || $fz_feel2_val == '') {
+                            $fz_feel2_val = 0;
+                        }
+                        var moneyPix = 1;
+                        if (moneyPix != 0 && $fz_feel2_val % moneyPix != 0) {
+                            $fz_feel2_val = ($fz_feel2_val > moneyPix) ? ( $fz_feel2_val - $fz_feel2_val % moneyPix ) : 0;
+                            $fz_feel2.val($fz_feel2_val);
+                            getSumMoneyPixAndBoundsPix(2);
+                            alert('  您輸入的點數不足， \n 系統將為您輸入符合的點數');
+                            $fz_feel2.focus();
+                            isSubmit = false;
+                            return false;
+                        }
+                    }
+                    form.bill_save.value = 'OK';
+                    form.submit();
+                } else {
+                    form.bill_save = '';
+                }
+            }else{ //確認為內嵌瀏覽器
+                $.when(xconfirm("確認送出訂單？"))
+                .done(function(){
+                if (!isSubmit) {
+                    isSubmit = true;
+                }
+                $fz_feel2 = $('#fz_feel2');
+                if ($fz_feel2.length) {
+                    $fz_feel2_val = parseInt($fz_feel2.val(), 10);
+                    // 初始化訂單
+                    if (isNaN($fz_feel2_val) || $fz_feel2_val == '') {
+                        $fz_feel2_val = 0;
+                    }
+                    var moneyPix = 1;
+                    if (moneyPix != 0 && $fz_feel2_val % moneyPix != 0) {
+                        $fz_feel2_val = ($fz_feel2_val > moneyPix) ? ( $fz_feel2_val - $fz_feel2_val % moneyPix ) : 0;
+                        $fz_feel2.val($fz_feel2_val);
+                        getSumMoneyPixAndBoundsPix(2);
+                        alert('  您輸入的點數不足， \n 系統將為您輸入符合的點數');
+                        $fz_feel2.focus();
+                        isSubmit = false;
+                        return false;
+                    }
+                }
+                form.bill_save.value = 'OK';
+                form.submit();
+                }).fail(function(){
+                    form.bill_save = '';
+                });
+            };
+            return false;
+        }
+        </script>
+    </head>
+    <body>
+        <form name="bill_fm" method="post" action="3g_cart.php?act=check" enctype="multipart/form-data">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="RESULT_TB">
+                <tr style="background-image:url(images/mobi_title_bg.jpg);">
+                    <!-- 品名 -->
+                    <td width="46%" class="PRODUCT_UL"  >品名</td>
+
+                    <!-- 单价 -->
+                    <td width="18%" align="center" nowrap class="PRODUCT_UL"  >單價</td>
+
+                    <!-- 数量 -->
+                    <td width="18%" align="center" nowrap class="PRODUCT_UL"  >數量</td>
+                    
+                    <!-- 总计 -->
+                    <td width="18%" align="right" nowrap class="PRODUCT_UL"  >小計</td>
+                </tr>
+                <tr>
+                    <td bgcolor="#FFFFFF" class="item-name">網紅(P)-純灰-0~6m</td>
+                    <td align="center" bgcolor="#FFFFFF" class="t-price">299</td>
+                    <td align="center" bgcolor="#FFFFFF">1</td>
+                    <td align="right" bgcolor="#FFFFFF" class="t-price" data="1111"><b>299</b></td>
+                </tr>
+                <tr>
+                    <td colspan="3" align="right" bgcolor="#FFFFFF" class="item-name"><p>商品金額<br>運費</p></td>
+                    <td align="right" bgcolor="#FFFFFF" class="t-price" data="3333"><b>299<br><span id="span_yunfei_sum">85</span></b></td>
+                </tr>
+                    <!-- 進口稅 -->
+                    <tr id="html_id_yuihui_sum_show" style="display:none;">
+                        <td colspan="3" align="right" bgcolor="#FFFFFF" class="item-name"><p>滿額優惠</p></td>
+                        <td align="right" bgcolor="#FFFFFF" class="t-price"><b>-<strong id="html_id_yuihui_sum">0</strong></b></td>
+                        </tr>
+            </table>
+            <div class="list-wrap v-cell">
+                <!--/* 優惠后總金額 */-->
+                <input type="hidden" name="all_Moey" id="all_Moey" value="384">
+                <!--/* 優惠后總點數作廢 */-->
+                <input type="hidden" name="all_all_countout" id="all_all_countout" value="">
+                <!--/* 優惠后總金額，顯示 */-->
+                <div class="total-amount">
+                    加總費用：<small><!-- NT -->＄</small><b class="mobi_prd_total_price"><strong id="html_id_zeng_hui" data="6666">384</strong></b>元
+                </div>
+            </div>
+
+            <!-- 進口稅折抵 -->
+            <ul class="NORMAL_UL">
+                <li>
+                    <div class="item-info price" style="float:right;"><b id="sum_mon_id" class="t-price red font_150"></b></div>
+                    <div class="item">網購優惠折扣
+                        <br>
+                        <span id="sum_mon_tip" class="red"></span>
+                        <br>
+                        <span class="ItemBox">
+                        <input name="cart_id" type="text" class="Text" id="cart_id" onblur="GetCheckCartF(document.bill_fm)"
+                            placeholder="請輸入網購優惠代號" style="width:50%;" value="">
+                        </span>
+                    </div>
+                </li>
+            </ul>
+            <ul class="NORMAL_UL" id="show_fz_mix">
+                <li>
+                    <div class="item-info price" style="float:right;"><b id="points_show_id" class="t-price red font_150"></b></div>
+                    <div class="item">紅利點數折抵
+                        <br>
+                        <span class="red">您目前的紅利點數 : 0點 ( 1點 = 折抵1 元)</span>
+                        <br>
+                        <span class="ItemBox">
+                        <input name="fz_feel2" id="fz_feel2" type="text" class="Text" placeholder="請輸入點數"
+                            onkeypress="return isInt(this.value, window.event)" onkeyup="getSumMoneyPixAndBoundsPix(2)"
+                            value="請輸入點數">
+                        <input type="hidden" name="fz_feel1" id="fz_feel1" class="input" size="10"
+                            onkeypress="return isInt(this.value, window.event)" onkeyup="getSumMoneyPixAndBoundsPix(1)"
+                            onblur="getSumMoneyPixAndBoundsPix(3)" value="384">
+                        <input type="hidden" name="fz_feel5" id="fz_feel5" value=""/>
+                        </span>
+                    </div>
+                </li>
+            </ul>
+            <div class="list-wrap v-cell">
+                <div id="opcode_xxxxx" class="total-amount" style="">
+                應付金額：
+                <small><!-- NT -->＄</small>
+                <b id="op" class="mobi_prd_total_price">384</b>元
+                </div>
+                <br clear="all">
+                <p class="PRODUCT_BUY width_50" style="float:left;"><a href="3g_cart.php?act=pay">&lt;上一步</a></p>
+                <p class="PRODUCT_BUY width_50" style="float:left;"><a href="javascript:;" onclick="order_submit(document.bill_fm);">確認結帳 &gt;</a></p>
+                <input type="hidden" name="bill_save" value="">
+                <input type="hidden" name="product_sumx" id="sumx" value="299"/><!--商品總價格。-->
+                <input type="hidden" name="used_bonus_point" id="used_bonus_point" value="0"/><!--商品總價格。-->
+                <input type="hidden" name="x_sum_yunfei" id="x_sum_yunfei" value="85" /><!-- 總運費 -->
+                <input type="hidden" name="o_sum_yunfei" id="o_sum_yunfei" value="85"/>
+                <input type="hidden" name="order_cart_yh_sum" id="order_cart_yh_sum" value="0"/><!--商品滿額優惠。-->
+                <input type="hidden" name="carty_sum" id="carty_sum" value="0"/><!--優惠價格。-->
+                <input type="hidden" name="cart_p_nums" id="cart_p_nums" value="1">
+                <!--
+                <input type="hidden" name="o_send_cla" id="o_send_cla" value="F">
+                <input type="hidden" name="fu_kuan_v" id="fu_kuan_v" value="C">
+                -->
+                <input type="hidden" name="all_countout" value="">
+                <input type="hidden" id="odno" name="order_no" value="">
+                <input type="hidden" id="checkMix" name="checkMix" value="1">
+                <input type="hidden" id="MSTS_ChinaPay_OPEN" name="MSTS_ChinaPay_OPEN" value="">
+                <input type="hidden" id="i_num" name="i_num" value="1">
+                <input type="hidden" name="count_member_class" id="count_member_class" value="2"/>
+                <!--會員級別-->
+                <input type="hidden" name="buyren_shoptally" id="buyren_shoptally" value="0"/><!--紅利點數。-->
+                <input type="hidden" name="x_sum_countout" id="x_sum_countout" value="0"/>
+                <input type="hidden" name="x_send_name" id="x_send_name" value="F"/><!--配送方式-->
+                <input type="hidden" name="count_member_login_state" id="count_member_login_state" value="1"/><!--狀態。-->
+                <input type="hidden" name="per_order_cart_yn" id="per_order_cart_yn" value=""/><!--商品總價格。-->
+                <input type="hidden" name="count_member_login_op" id="count_member_login_op" value=""/><!--商品總價格。-->
+                <input type="hidden" name="web_ss_login_op" id="web_ss_login_op" value=""/>
+                <!--商品總價格。-->
+                <div id="my_test_g" style="display:none;"></div>
+                <br clear="all">
+                <br clear="all">
+            </div>
+        </form>
+    </body>
+</html>
