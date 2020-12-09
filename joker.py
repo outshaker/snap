@@ -76,6 +76,14 @@ def reshuffle(hand, n):
         hand[i], hand[j] = hand[j], hand[i]
     return
 
+# 建立紀錄表(沒有處理對子)
+def mk_log(hand, n):
+    log = [-1]*13
+    for i in range(n):
+        card_n = hand[i].getN()
+        log[card_n-1] = i
+    return log
+
 # 遊戲開始
 deck = getDeck()
 show(deck)
@@ -125,3 +133,45 @@ show(h2)
 reshuffle(h2, h2_cout)
 show(h2)
 
+# 判斷遊戲是否結束
+def isEnd():
+    return h1_cout == 0 or h2_cout == 0
+
+# 抽對方牌 P1開始，抽P2的牌
+hand = [h1, h2]
+log = [h1_log, h2_log]
+hand_cout = [h1_cout, h2_cout]
+
+turn = 0
+actor_id = turn % 2 # 0:P1, 1:P2
+other_id = (acter_id+1) % 2
+
+actor_hand = hand[actor_id]
+actor_hand_log = log[actor_id]
+actor_hand_cout = hand_cout[actor_id]
+other_hand = hand[other_id]
+other_hand_log = log[other_id]
+other_hand_cout = hand_cout[other_id]
+
+# while not isEnd():
+
+# 抽一張牌到 other > actor
+i = int(input(f"choose [1 to {other_hand_cout}]: ")) - 1
+card = other_hand[i]
+card_n = card.getN()
+if type(card_n) is int and card_n != 14: # 非鬼牌
+    if actor_hand_log[card_n-1] == -1: # 沒有紀錄，無法形成對子，放入手牌
+        hand_cout[actor_id] += 1 # 手牌數量+1
+        hand[actor_id][hand_cout[actor_id]] = card # 放入手牌
+        log[actor_id][card_n-1] = hand_cout[actor_id] # 更新紀錄表
+        
+        reshuffle(hand[actor_id], hand_cout[actor_id]) # 重洗手牌
+        log[actor_id] = mk_log(hand[actor_id], hand_cout[actor_id]) # 重新建立
+
+    else: # 有紀錄，湊成對子，把牌消掉
+        hand_cout[actor_id] -= 1 #手牌數量-1
+        loc = log[actor_id][card_n] # 手牌中湊成對子的牌的位置
+        hand[actor_id][loc].clear() # 清掉牌
+        log[actor_id][card_n-1] = -1 #更新紀錄表
+
+elif type(card_n) is int and card_n == 14: # 鬼牌
